@@ -1,13 +1,13 @@
 ﻿using System;
-using LM = ObjectResolver.LifeTimeManager;
+using OB = ObjectResolver.ObjectBuilder;
 
 namespace ObjectResolver.ResolverObject
 {
-    internal class ResolveObject
+    class ResolveObject
     {
         internal string Name { get; set; } = string.Empty;
         internal object Obj { get; set; } = null;
         internal Type Type { get; set; }
-        internal LM.LifeTime Lifetime { get; set; } = LM.LifeTime.Transient;
+        internal Type BuilderType { get; set; } = typeof(OB.TransientBuilder);
     }
 }

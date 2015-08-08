@@ -4,11 +4,12 @@ using System.Collections.Generic;
 
 namespace ObjectResolver.ResolverObject
 {
-    internal class ResolveData
+    class ResolveFactory
     {
-        private ResolveData() { }
+        private ResolveFactory() { }
 
-        private static ResolveData _rd;
+        private static ResolveFactory _rd;
+        internal static ResolveFactory ResData = ResolveFactory.Instance;
         IDictionary<Type, ResolveObject> dicContainer = new Dictionary<Type, ResolveObject>();
 
         public ResolveObject this[Type t]
@@ -32,9 +33,9 @@ namespace ObjectResolver.ResolverObject
             }
         }
 
-        public static ResolveData Instance
+        public static ResolveFactory Instance
         {
-            get { return _rd ?? (_rd = new ResolveData()); }
+            get { return _rd ?? (_rd = new ResolveFactory()); }
         }
 
     }

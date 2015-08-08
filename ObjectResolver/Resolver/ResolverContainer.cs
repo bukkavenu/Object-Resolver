@@ -1,10 +1,17 @@
 ﻿using System;
-using RO = ObjectResolver.ResolverObject;
+using LM = ObjectResolver.LifeTimeManager;
 
 namespace ObjectResolver.Resolver
 {
     public class ResolverContainer : IResolver
     {
+        private LM.ILifeTimeManager lifeManager = null;        
+
+        public ResolverContainer()
+        {
+            lifeManager = new LM.TransientFactory();
+        }
+
         public void Register<TInterface, TImplementor>()
         {
 
@@ -13,19 +20,18 @@ namespace ObjectResolver.Resolver
 
         public void Register(Type tInterface, Type tImplementor)
         {
-            RO.ResolverFactory.Add(tInterface, tImplementor);
+            lifeManager.Add(tInterface, tImplementor);
         }
 
         public void RegisterInstance<TInterface>(object instance)
         {
-
-            RO.ResolverFactory.Add(typeof(TInterface), instance);
+            lifeManager.Add(typeof(TInterface), instance);
         }
 
 
         public TInterface Resolve<TInterface>()
         {
-            return RO.ResolverFactory.Retrieve<TInterface>();
+            return lifeManager.Retrieve<TInterface>();
         }
 
 
@@ -34,6 +40,12 @@ namespace ObjectResolver.Resolver
             TInterface t = Resolve<TInterface>();
             act(t);
             return t;
+        }
+
+        public IWithLifeTimeResolver With<TILifeManager>()
+            where TILifeManager : ILifeManager
+        {
+            return new WithLifeTimeResolverContainer(Activator.CreateInstance<TILifeManager>().Create());
         }
 
         #region IDisposable Support
@@ -45,29 +57,14 @@ namespace ObjectResolver.Resolver
             {
                 if (disposing)
                 {
-                    // TODO: dispose managed state (managed objects).
+                    lifeManager.Dispose();
                 }
-
-                // TODO: free unmanaged resources (unmanaged objects) and override a finalizer below.
-                // TODO: set large fields to null.
-
                 disposedValue = true;
             }
         }
-
-        // TODO: override a finalizer only if Dispose(bool disposing) above has code to free unmanaged resources.
-        // ~ResolverContainer() {
-        //   // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
-        //   Dispose(false);
-        // }
-
-        // This code added to correctly implement the disposable pattern.
         public void Dispose()
         {
-            // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
             Dispose(true);
-            // TODO: uncomment the following line if the finalizer is overridden above.
-            // GC.SuppressFinalize(this);
         }
         #endregion
     }
